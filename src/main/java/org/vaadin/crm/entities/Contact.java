@@ -1,15 +1,21 @@
 package org.vaadin.crm.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+
 @Entity
 public class Contact extends AbstractEntity {
+
+    private LocalDateTime dateTime;
 
     @NotEmpty
     private String firstName = "";
@@ -23,6 +29,9 @@ public class Contact extends AbstractEntity {
     @JsonIgnoreProperties({"employees"})
     private Company company;
 
+    @OneToMany(mappedBy = "contact")
+    private List<Task> task = new LinkedList<>();
+
     @NotNull
     @ManyToOne
     private Status status;
@@ -30,11 +39,12 @@ public class Contact extends AbstractEntity {
     @Email
     @NotEmpty
     private String email = "";
-
     @Override
     public String toString() {
         return firstName + " " + lastName;
     }
+
+
 
     public String getFirstName() {
         return firstName;
@@ -74,5 +84,21 @@ public class Contact extends AbstractEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Task> getCommunication() {
+        return task;
+    }
+
+    public void setCommunication(List<Task> task) {
+        this.task = task;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }

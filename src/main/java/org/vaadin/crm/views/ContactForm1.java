@@ -2,27 +2,39 @@ package org.vaadin.crm.views;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.shared.Registration;
-import org.vaadin.crm.entities.Company;
-import org.vaadin.crm.entities.Contact;
-import org.vaadin.crm.entities.Status;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.shared.Registration;
+import org.vaadin.crm.entities.Task;
+import org.vaadin.crm.entities.Company;
+import org.vaadin.crm.entities.Contact;
+import org.vaadin.crm.entities.Status;
+import org.vaadin.crm.services.CrmService;
 
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-//@Route(value = "form")
-public class ContactForm extends FormLayout {
+@Route(value = "form1")
+public class ContactForm1 extends FormLayout {
+    CrmService service;
+
     TextField firstName = new TextField("Имя");
     TextField lastName = new TextField("Фамилия");
+
+    DateTimePicker dateTime = new DateTimePicker("Start date");
+
     EmailField email = new EmailField("Email");
     ComboBox<Status> status = new ComboBox<>("Статус");
     ComboBox<Company> company = new ComboBox<>("Компания");
@@ -32,23 +44,32 @@ public class ContactForm extends FormLayout {
     Button close = new Button("Закрыть");
 
     BeanValidationBinder<Contact> binder = new BeanValidationBinder<>(Contact.class);
+    //BeanValidationBinder<Task> taskBinder = new BeanValidationBinder<>(Task.class);
 
-    public ContactForm(List<Company> companies, List<Status> statuses) {
+    public ContactForm1(List<Company> companies, List<Status> statuses, CrmService service) {
+        this.service = service;
+
         addClassName("contact-form");
         binder.bindInstanceFields(this);
+        //taskBinder.bindInstanceFields(this);
 
         company.setItems(companies);
         company.setItemLabelGenerator(Company::getName);
         status.setItems(statuses);
         status.setItemLabelGenerator(Status::getName);
 
+        dateTime.setValue(LocalDateTime.now().withNano(0));
+
         add(firstName,
                 lastName,
                 email,
                 company,
                 status,
+                dateTime,
                 createButtonsLayout());
 
+        addSaveListener(e -> saveContact(e));
+        addDeleteListener(this::deleteContact);
     }
 
     public void setContact(Contact contact) {
@@ -76,10 +97,10 @@ public class ContactForm extends FormLayout {
         }
     }
 
-    public static abstract class ContactFormEvent extends ComponentEvent<ContactForm> {
+    public static abstract class ContactFormEvent extends ComponentEvent<ContactForm1> {
         private Contact contact;
 
-        protected ContactFormEvent(ContactForm source, Contact contact) {
+        protected ContactFormEvent(ContactForm1 source, Contact contact) {
             super(source, false);
             this.contact = contact;
         }
@@ -89,20 +110,20 @@ public class ContactForm extends FormLayout {
     }
 
     public static class SaveEvent extends ContactFormEvent {
-        SaveEvent(ContactForm source, Contact contact) {
+        SaveEvent(ContactForm1 source, Contact contact) {
             super(source, contact);
         }
     }
 
     public static class DeleteEvent extends ContactFormEvent {
-        DeleteEvent(ContactForm source, Contact contact) {
+        DeleteEvent(ContactForm1 source, Contact contact) {
             super(source, contact);
         }
 
     }
 
     public static class CloseEvent extends ContactFormEvent {
-        CloseEvent(ContactForm source) {
+        CloseEvent(ContactForm1 source) {
             super(source, null);
         }
     }
@@ -117,6 +138,17 @@ public class ContactForm extends FormLayout {
     public Registration addCloseListener(ComponentEventListener<CloseEvent> listener) {
         return addListener(CloseEvent.class, listener);
     }
+
+
+    private void saveContact(ContactForm1.SaveEvent event) {
+        service.saveContact(event.getContact());
+    }
+
+    private void deleteContact(ContactForm1.DeleteEvent event) {
+        service.deleteContact(event.getContact());
+
+    }
+
 
 }
 

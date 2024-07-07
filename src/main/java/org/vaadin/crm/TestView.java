@@ -9,6 +9,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.vaadin.crm.entities.Contact;
+import org.vaadin.crm.services.CrmService;
+import org.vaadin.crm.views.ContactForm;
+
 /**
  * A sample Vaadin view class.
  * <p>
@@ -21,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * The main view contains a text field for getting the user name and a button
  * that shows a greeting message in a notification.
  */
-@Route(value = "/test")
+@Route(value = "/company")
 public class TestView extends VerticalLayout {
 
     /**
@@ -33,15 +37,20 @@ public class TestView extends VerticalLayout {
      *            The message service. Automatically injected Spring managed
      *            bean.
      */
-    public TestView(@Autowired GreetService service) {
+    CrmService service;
 
+    ContactForm form;
+
+    public TestView(CrmService service) {
+        this.service = service;
         // Use TextField for standard text input
         TextField textField = new TextField("Your name");
         textField.addClassName("bordered");
 
+
         // Button click listeners can be defined as lambda expressions
         Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
+            System.out.println("Button");
         });
 
         // Theme variants give you predefined extra styles for components.
@@ -56,7 +65,27 @@ public class TestView extends VerticalLayout {
         // styles.css.
         addClassName("centered-content");
 
-        add(textField, button);
+
+        configureForm();
+
+        add(textField, button, form);
+    }
+
+    private void configureForm() {
+        form = new ContactForm(service.findAllCompanies(), service.findAllStatuses());
+        form.setWidth("25em");
+
+        form.addSaveListener(this::saveContact);
+        form.addDeleteListener(this::deleteContact);
+    }
+
+
+    private void saveContact(ContactForm.SaveEvent event) {
+        service.saveContact(event.getContact());
+    }
+
+    private void deleteContact(ContactForm.DeleteEvent event) {
+        service.deleteContact(event.getContact());
     }
 
 }

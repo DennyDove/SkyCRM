@@ -5,10 +5,12 @@ import org.vaadin.crm.entities.Contact;
 import org.vaadin.crm.entities.Status;
 
 
+import org.vaadin.crm.entities.Task;
 import org.vaadin.crm.repositories.CompanyRepository;
 import org.vaadin.crm.repositories.ContactRepository;
 import org.vaadin.crm.repositories.StatusRepository;
 import org.springframework.stereotype.Service;
+import org.vaadin.crm.repositories.TaskRepository;
 
 import java.util.List;
 
@@ -18,13 +20,16 @@ public class CrmService {
     private final ContactRepository contactRepository;
     private final CompanyRepository companyRepository;
     private final StatusRepository statusRepository;
+    private final TaskRepository taskRepository;
 
     public CrmService(ContactRepository contactRepository,
                       CompanyRepository companyRepository,
-                      StatusRepository statusRepository) {
+                      StatusRepository statusRepository,
+                      TaskRepository taskRepository) {
         this.contactRepository = contactRepository;
         this.companyRepository = companyRepository;
         this.statusRepository = statusRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<Contact> findAllContacts(String stringFilter) {
@@ -57,5 +62,13 @@ public class CrmService {
 
     public List<Status> findAllStatuses(){
         return statusRepository.findAll();
+    }
+
+    public void saveDate(Task task) {
+        if (task == null) {
+            System.err.println("Contact is null. Are you sure you have connected your form to the application?");
+            return;
+        }
+        taskRepository.save(task);
     }
 }

@@ -15,7 +15,7 @@ package org.vaadin.crm.views;
 
 //import com.example.application.data.Contact;
 //import com.vaadin.flow.component.Component;
-import com.example.application.views.list.ContactForm;
+import org.vaadin.crm.views.ContactForm;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -23,6 +23,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -37,6 +38,7 @@ import java.util.Collections;
 @PageTitle("Контакты | Sky CRM")
 public class MainView extends VerticalLayout {
     Grid<Contact> grid = new Grid<>(Contact.class);
+    //TabSheet tabSheet = new TabSheet();
     TextField filterText = new TextField();
     ContactForm form;
     ContactForm form1;
@@ -93,6 +95,9 @@ public class MainView extends VerticalLayout {
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
 
         grid.asSingleSelect().addValueChangeListener(event -> editContact(event.getValue()));
+        //grid.addItemDoubleClickListener(e -> {
+        //            grid.getUI().ifPresent(ui -> ui.navigate("app-layout"));
+        //});
     }
 
     private Component getContent() {
@@ -127,10 +132,21 @@ public class MainView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
+        RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>();
+        radioGroup.setLabel("Status");
+        radioGroup.setItems("Pending", "Submitted", "Confirmed");
+        radioGroup.setValue("Pending");
+        radioGroup.addValueChangeListener(e -> {
+                        if(radioGroup.getValue() == "Submitted") {
+                            System.out.println("Radio button");
+                        }
+        });
+        //TODO
+
         Button addContactButton = new Button("Добавить контакт");
         addContactButton.addClickListener(click -> addContact());
 
-        var toolbar = new HorizontalLayout(filterText, addContactButton);
+        var toolbar = new HorizontalLayout(filterText, addContactButton, radioGroup);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
