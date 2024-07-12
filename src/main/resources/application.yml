@@ -19,9 +19,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
+    #defer-datasource-initialization: true
+
   #sql:
   #  init:
   #    mode: always
@@ -48,6 +49,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:/mydata.sql
 
 logging:
   level:

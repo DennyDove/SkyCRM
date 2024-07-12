@@ -14,15 +14,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
-import org.vaadin.crm.entities.Task;
 import org.vaadin.crm.entities.Company;
-import org.vaadin.crm.entities.Contact;
 import org.vaadin.crm.entities.Status;
 import org.vaadin.crm.services.CrmService;
 
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,51 +26,50 @@ import java.util.List;
 public class ContactForm1 extends FormLayout {
     CrmService service;
 
-    TextField firstName = new TextField("Имя");
-    TextField lastName = new TextField("Фамилия");
+    TextField companyName = new TextField("Название компании");
 
-    DateTimePicker dateTime = new DateTimePicker("Start date");
+    DateTimePicker dateTime = new DateTimePicker("Дата создания");
 
     EmailField email = new EmailField("Email");
     ComboBox<Status> status = new ComboBox<>("Статус");
-    ComboBox<Company> company = new ComboBox<>("Компания");
+
+    TextField comments = new TextField("Комментарии");
 
     Button save = new Button("Сохранить");
     Button delete = new Button("Удалить");
     Button close = new Button("Закрыть");
 
-    BeanValidationBinder<Contact> binder = new BeanValidationBinder<>(Contact.class);
+    BeanValidationBinder<Company> binder = new BeanValidationBinder<>(Company.class);
     //BeanValidationBinder<Task> taskBinder = new BeanValidationBinder<>(Task.class);
 
-    public ContactForm1(List<Company> companies, List<Status> statuses, CrmService service) {
+    public ContactForm1(List<Status> statuses, CrmService service) {
         this.service = service;
 
         addClassName("contact-form");
         binder.bindInstanceFields(this);
+
         //taskBinder.bindInstanceFields(this);
 
-        company.setItems(companies);
-        company.setItemLabelGenerator(Company::getName);
         status.setItems(statuses);
         status.setItemLabelGenerator(Status::getName);
 
         dateTime.setValue(LocalDateTime.now().withNano(0));
 
-        add(firstName,
-                lastName,
+        add(companyName,
                 email,
-                company,
                 status,
                 dateTime,
+                comments,
                 createButtonsLayout());
 
         addSaveListener(e -> saveContact(e));
         addDeleteListener(this::deleteContact);
     }
 
-    public void setContact(Contact contact) {
-        binder.setBean(contact);
+    public void setCompany(Company company) {
+        binder.setBean(company);
     }
+
 
     private HorizontalLayout createButtonsLayout() {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -98,26 +93,26 @@ public class ContactForm1 extends FormLayout {
     }
 
     public static abstract class ContactFormEvent extends ComponentEvent<ContactForm1> {
-        private Contact contact;
+        private Company company;
 
-        protected ContactFormEvent(ContactForm1 source, Contact contact) {
+        protected ContactFormEvent(ContactForm1 source, Company company) {
             super(source, false);
-            this.contact = contact;
+            this.company = company;
         }
-        public Contact getContact() {
-            return contact;
+        public Company getCompany() {
+            return company;
         }
     }
 
     public static class SaveEvent extends ContactFormEvent {
-        SaveEvent(ContactForm1 source, Contact contact) {
-            super(source, contact);
+        SaveEvent(ContactForm1 source, Company company) {
+            super(source, company);
         }
     }
 
     public static class DeleteEvent extends ContactFormEvent {
-        DeleteEvent(ContactForm1 source, Contact contact) {
-            super(source, contact);
+        DeleteEvent(ContactForm1 source, Company company) {
+            super(source, company);
         }
 
     }
@@ -141,11 +136,11 @@ public class ContactForm1 extends FormLayout {
 
 
     private void saveContact(ContactForm1.SaveEvent event) {
-        service.saveContact(event.getContact());
+        service.saveContact(event.getCompany());
     }
 
     private void deleteContact(ContactForm1.DeleteEvent event) {
-        service.deleteContact(event.getContact());
+        service.deleteContact(event.getCompany());
 
     }
 

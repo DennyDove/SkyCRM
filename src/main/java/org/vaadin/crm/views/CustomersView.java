@@ -4,7 +4,6 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
@@ -13,18 +12,15 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.vaadin.crm.TestView;
-import org.vaadin.crm.entities.Contact;
+import org.vaadin.crm.entities.Company;
 import org.vaadin.crm.services.CrmService;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 
 @Route("customers")
 
 public class CustomersView extends AppLayout {
-    Grid<Contact> grid = new Grid<>(Contact.class);
+    Grid<Company> grid = new Grid<>(Company.class);
     TextField filterText = new TextField();
     CrmService service;
 
@@ -80,20 +76,20 @@ public class CustomersView extends AppLayout {
     private void configureGrid() {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
-        grid.setColumns("dateTime", "firstName", "lastName", "email");
+        grid.setColumns("dateTime", "companyName", "email");
 
         grid.getColumns().get(0).setHeader("Дата");
-        grid.getColumns().get(1).setHeader("Имя");
-        grid.getColumns().get(2).setHeader("Фамилия");
+        grid.getColumns().get(1).setHeader("Название компании");
 
-        grid.addColumn(contact -> contact.getStatus().getName()).setHeader("Статус");
-        grid.addColumn(contact -> contact.getCompany().getName()).setHeader("Компания");
+        grid.addColumn(company -> company.getStatus().getName()).setHeader("Статус");
+        grid.addColumn(Company::getComments).setHeader("Комментарии");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
 
         //grid.asSingleSelect().addValueChangeListener(event -> editContact(event.getValue()));
         grid.addItemDoubleClickListener(e -> {
             grid.getUI().ifPresent(ui -> ui.navigate(ContactForm1.class).ifPresent(form -> {
-                form.setContact(grid.asSingleSelect().getValue());
+                form.setCompany(grid.asSingleSelect().getValue());
+                form.setCompany(grid.asSingleSelect().getValue());
                 if(form.dateTime.isEmpty()) {
                     form.dateTime.setValue(LocalDateTime.now().withNano(0));
                 }
@@ -101,12 +97,12 @@ public class CustomersView extends AppLayout {
         });
     }
 
-    private void saveContact(ContactForm.SaveEvent event) {
-        service.saveContact(event.getContact());
+    private void saveContact(ContactForm1.SaveEvent event) {
+        service.saveContact(event.getCompany());
     }
 
-    private void deleteContact(ContactForm.DeleteEvent event) {
-        service.deleteContact(event.getContact());
+    private void deleteContact(ContactForm1.DeleteEvent event) {
+        service.deleteContact(event.getCompany());
     }
 
     private void updateList() {

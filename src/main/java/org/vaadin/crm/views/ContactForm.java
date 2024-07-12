@@ -1,12 +1,11 @@
+/*
 package org.vaadin.crm.views;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import org.vaadin.crm.entities.Company;
-import org.vaadin.crm.entities.Contact;
 import org.vaadin.crm.entities.Status;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -25,34 +24,30 @@ public class ContactForm extends FormLayout {
     TextField lastName = new TextField("Фамилия");
     EmailField email = new EmailField("Email");
     ComboBox<Status> status = new ComboBox<>("Статус");
-    ComboBox<Company> company = new ComboBox<>("Компания");
 
     Button save = new Button("Сохранить");
     Button delete = new Button("Удалить");
     Button close = new Button("Закрыть");
 
-    BeanValidationBinder<Contact> binder = new BeanValidationBinder<>(Contact.class);
+    BeanValidationBinder<Company> binder = new BeanValidationBinder<>(Company.class);
 
-    public ContactForm(List<Company> companies, List<Status> statuses) {
+    public ContactForm(List<Status> statuses) {
         addClassName("contact-form");
         binder.bindInstanceFields(this);
 
-        company.setItems(companies);
-        company.setItemLabelGenerator(Company::getName);
         status.setItems(statuses);
         status.setItemLabelGenerator(Status::getName);
 
         add(firstName,
                 lastName,
                 email,
-                company,
                 status,
                 createButtonsLayout());
 
     }
 
-    public void setContact(Contact contact) {
-        binder.setBean(contact);
+    public void setContact(Company company) {
+        binder.setBean(company);
     }
 
     private HorizontalLayout createButtonsLayout() {
@@ -77,26 +72,26 @@ public class ContactForm extends FormLayout {
     }
 
     public static abstract class ContactFormEvent extends ComponentEvent<ContactForm> {
-        private Contact contact;
+        private Company company;
 
-        protected ContactFormEvent(ContactForm source, Contact contact) {
+        protected ContactFormEvent(ContactForm source, Company company) {
             super(source, false);
-            this.contact = contact;
+            this.company = company;
         }
-        public Contact getContact() {
-            return contact;
+        public Company getContact() {
+            return company;
         }
     }
 
     public static class SaveEvent extends ContactFormEvent {
-        SaveEvent(ContactForm source, Contact contact) {
-            super(source, contact);
+        SaveEvent(ContactForm source, Company company) {
+            super(source, company);
         }
     }
 
     public static class DeleteEvent extends ContactFormEvent {
-        DeleteEvent(ContactForm source, Contact contact) {
-            super(source, contact);
+        DeleteEvent(ContactForm source, Company company) {
+            super(source, company);
         }
 
     }
@@ -119,7 +114,7 @@ public class ContactForm extends FormLayout {
     }
 
 }
-
+*/
 
 
 

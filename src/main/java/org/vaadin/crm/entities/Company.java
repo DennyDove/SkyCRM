@@ -1,35 +1,43 @@
 package org.vaadin.crm.entities;
 
-import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.LinkedList;
+import java.time.LocalDateTime;
 import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
 
 @Entity
 public class Company extends AbstractEntity {
-    @NotBlank
-    private String name;
 
-    @OneToMany(mappedBy = "company")
-    @Nullable
-    private List<Contact> employees = new LinkedList<>();
+    private LocalDateTime dateTime;
 
-    public String getName() {
-        return name;
-    }
+    @NotEmpty
+    private String companyName = "";
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    /*
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.ALL)
+    private List<Task> task;*/
 
-    public List<Contact> getEmployees() {
-        return employees;
-    }
+    @NotNull
+    @ManyToOne
+    private Status status;
 
-    public void setEmployees(List<Contact> employees) {
-        this.employees = employees;
-    }
+    @Email
+    @NotEmpty
+    private String email = "";
+
+    @NotEmpty
+    private String comments = "";
+
 }
