@@ -1,7 +1,5 @@
 package org.vaadin.crm.entities;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,35 +11,44 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 
 @Entity
-public class Company extends AbstractEntity
-                     implements Serializable {
+public class Facility implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idgenerator")
+    // The initial value is to account for data.sql demo data ids
+    //@SequenceGenerator(name = "idgenerator", initialValue = 1000)
+    private Long id;
 
     private LocalDateTime dateTime;
 
     @NotEmpty
-    private String companyName = "";
+    private String facilityName = "";
 
-    /*
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "company", cascade = CascadeType.ALL)
-    private List<Task> task;*/
+    private String area;
+
+    private String address;
+
+    private String price;
+
+    private String owner;
+
+    private String facilityReadiness;
 
     @NotNull
     @ManyToOne
     private Status status;
 
-    @Email
-    @NotEmpty
-    private String email = "";
-
     //@Size(max = 5000)
     @Column(length = 5000)
-    private String comments = "";
+    private String description = "";
+
+    //@NotEmpty
+    private String contactLinks = "";
 
 }

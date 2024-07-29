@@ -1,37 +1,3 @@
-INSERT INTO STATUS (ID, VERSION, NAME) VALUES
-(1, 1, 'Imported lead'),
-(2, 1, 'Not contacted'),
-(3, 1, 'Contacted'),
-(4, 1, 'Customer'),
-(5, 1, 'Closed (lost)');
-
-INSERT INTO COMPANY (ID, VERSION, EMAIL, COMPANY_NAME, STATUS_ID) VALUES
-(1, 1, 'eula.lane@jigrormo.ye', 'Eula Lane', 1),
-(2, 1, 'barry.rodriquez@zun.mm', 'Barry Rodriquez', 5),
-(3, 1, 'eugenia.selvi@capfad.vn', 'Eugenia Selvi', 3),
-(4, 1, 'alejandro.miles@dec.bn', 'Alejandro Miles', 3),
-(5, 1, 'cora.tesi@bivo.yt', 'Cora Tesi', 4),
-(6, 1, 'marguerite.ishii@judbilo.gn', 'Marguerite Ishii', 2),
-(7, 1, 'mildred.jacobs@joraf.wf', 'Mildred Jacobs', 1),
-(8, 1, 'gene.goodman@kem.tl', 'Gene Goodman', 5),
-(9, 1, 'lettie.bennett@odeter.bb', 'Lettie Bennett', 1),
-(10, 1, 'mabel.leach@lisohuje.vi', 'Mabel Leach', 2),
-(11, 1, 'jordan.miccinesi@duod.gy', 'Jordan Miccinesi', 3),
-(12, 1, 'marie.parkes@nowufpus.ph', 'Marie Parkes', 1),
-(13, 1, 'rose.gray@kagu.hr', 'Rose Gray', 4),
-(14, 1, 'garrett.stokes@fef.bg', 'Garrett Stokes', 3),
-(15, 1, 'barbara.matthieu@derwogi.jm', 'Barbara Matthieu', 5),
-(16, 1, 'jean.rhodes@wehovuce.gu', 'Jean Rhodes', 3),
-(17, 1, 'jack.romoli@zamum.bw', 'Jack Romoli', 4),
-(18, 1, 'pearl.holden@dunebuh.cr', 'Pearl Holden', 1),
-(19, 1, 'belle.montero@repiwid.si', 'Belle Montero', 5),
-(20, 1, 'olive.molina@razuppa.ga', 'Olive Molina', 2),
-(21, 1, 'minerva.todd@kulmenim.ad', 'Minerva Todd', 3),
-(22, 1, 'bobby.pearson@ib.kg', 'Bobby Pearson', 1),
-(23, 1, 'larry.ciappi@ba.lk', 'Larry Ciappi', 2),
-(24, 1, 'ronnie.salucci@tohhij.lv', 'Ronnie Salucci', 1),
-(25, 1, 'walter.grossi@tuvo.sa', 'Walter Grossi', 1);
-
 INSERT INTO FACILITY (ID, DATE_TIME, FACILITY_NAME, AREA, ADDRESS, PRICE, OWNER, STATUS_ID) VALUES
 (1, CURRENT_TIMESTAMP, 'Кунцево Плаза', '53', 'Ломакина 16', '12000', 'Вера Жукова', 1),
 (2, CURRENT_TIMESTAMP, 'MegaMarkt', '53', 'Ломакина 16', '12000', 'Вера Жукова', 5),

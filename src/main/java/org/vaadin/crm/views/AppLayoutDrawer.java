@@ -37,18 +37,14 @@ public class AppLayoutDrawer extends AppLayout {
         SideNav nav = new SideNav();
         nav.addItem(new SideNavItem("Dashboard", "/dashboard",
                         VaadinIcon.DASHBOARD.create()),
-                new SideNavItem("Orders", "/orders",
+                new SideNavItem("Объекты", "/orders",
                         VaadinIcon.CART.create()),
-                new SideNavItem("Customers", "/customers",
+                new SideNavItem("Компании", "/customers",
                         VaadinIcon.USER_HEART.create()),
-                new SideNavItem("Products", "/products",
-                        VaadinIcon.PACKAGE.create()),
                 new SideNavItem("Documents", "/documents",
                         VaadinIcon.RECORDS.create()),
                 new SideNavItem("Tasks", "/tasks",
-                        VaadinIcon.LIST.create()),
-                new SideNavItem("Analytics", "/analytics",
-                        VaadinIcon.CHART.create()));
+                        VaadinIcon.LIST.create()));
         return nav;
     }
 

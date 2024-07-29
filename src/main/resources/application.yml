@@ -5,8 +5,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 1280KB
-      max-request-size: 1280KB
+      max-file-size: 7080KB
+      max-request-size: 17800KB
 
   datasource:
     driverClassName: com.mysql.jdbc.Driver
@@ -21,12 +21,12 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    #defer-datasource-initialization: true
-
-  #sql:
-  #  init:
-  #    mode: always
-  #    data-locations: classpath:/mydata.sql
+    defer-datasource-initialization: true
+  sql:
+    init:
+      continue-on-error: true
+      mode: always
+      data-locations: classpath:/mydata.sql
 
 logging:
   level:
@@ -36,6 +36,12 @@ spring:
   config:
     activate:
       on-profile: postgres
+
+  servlet:
+    multipart:
+      max-file-size: 7080KB
+      max-request-size: 17800KB
+
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/test
@@ -52,6 +58,7 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
+      continue-on-error: true
       mode: always
       data-locations: classpath:/mydata.sql
 

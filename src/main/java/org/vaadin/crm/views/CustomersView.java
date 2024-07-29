@@ -2,7 +2,10 @@ package org.vaadin.crm.views;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -15,13 +18,22 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.crm.entities.Company;
 import org.vaadin.crm.services.CrmService;
 
-import java.time.LocalDateTime;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 @Route("customers")
 
 public class CustomersView extends AppLayout {
     Grid<Company> grid = new Grid<>(Company.class);
     TextField filterText = new TextField();
+    Button but1 = new Button("Add file");
+    Long id;
+
+    //ContactForm1 form1;
+
+    CompanyDialog companyDialog;
+
     CrmService service;
 
     public CustomersView(CrmService service) {
@@ -38,8 +50,32 @@ public class CustomersView extends AppLayout {
         Scroller scroller = new Scroller(nav);
         scroller.setClassName(LumoUtility.Padding.SMALL);
 
+        Button addContactButton = new Button("Добавить контакт");
+        addContactButton.addClickListener(click -> addContact());
+
+        but1.addClickListener(click -> {
+
+            id = grid.asSingleSelect().getValue().getId();
+
+            //String fileName = "/path"+id;
+
+            File path = new File("/documents/"+id);
+
+            Desktop desktop = null;
+            desktop = Desktop.getDesktop();
+
+            try {
+                desktop.open(path.getAbsoluteFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        });
+
         addToDrawer(scroller);
-        addToNavbar(toggle, title, filterText);
+        addToNavbar(toggle, title, filterText, but1, addContactButton);
+
         filterText.setPlaceholder("Сортировать по алфавиту...");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
@@ -53,22 +89,26 @@ public class CustomersView extends AppLayout {
     }
     // end::snippet[]
 
+    /*
+    private void configureDialog() {
+        form1 = new ContactForm1(service.findAllStatuses(), service);
+        form1.setWidth("25em");
+
+        form1.addSaveListener(this::saveContact);
+        form1.addDeleteListener(this::deleteContact);
+    }
+    */
+
     private SideNav getTabs() {
         SideNav nav = new SideNav();
-        nav.addItem(new SideNavItem("Dashboard", "",
-                        VaadinIcon.DASHBOARD.create()),
-                new SideNavItem("Orders", "/orders",
+        nav.addItem(new SideNavItem("Объекты", "/facilities",
                         VaadinIcon.CART.create()),
-                new SideNavItem("Customers", "/customers",
+                new SideNavItem("Компании", "/customers",
                         VaadinIcon.USER_HEART.create()),
-                new SideNavItem("Products", "/products",
-                        VaadinIcon.PACKAGE.create()),
                 new SideNavItem("Documents", "/documents",
                         VaadinIcon.RECORDS.create()),
                 new SideNavItem("Tasks", "/tasks",
-                        VaadinIcon.LIST.create()),
-                new SideNavItem("Analytics", "/analytics",
-                        VaadinIcon.CHART.create()));
+                        VaadinIcon.LIST.create()));
         return nav;
     }
     // tag::snippet[]
@@ -86,23 +126,32 @@ public class CustomersView extends AppLayout {
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
 
         //grid.asSingleSelect().addValueChangeListener(event -> editContact(event.getValue()));
+        //grid.addSelectionListener(e -> {});
+        //grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+
         grid.addItemDoubleClickListener(e -> {
-            grid.getUI().ifPresent(ui -> ui.navigate(ContactForm1.class).ifPresent(form -> {
-                form.setCompany(grid.asSingleSelect().getValue());
-                form.setCompany(grid.asSingleSelect().getValue());
-                if(form.dateTime.isEmpty()) {
-                    form.dateTime.setValue(LocalDateTime.now().withNano(0));
-                }
-            }));
+            companyDialog = new CompanyDialog(service, grid.asSingleSelect().getValue());
+            ContactForm.id = grid.asSingleSelect().getValue().getId();
+            addToNavbar(companyDialog);
         });
+
+        // установить распределение текста в ячейке по высоте
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
     }
 
-    private void saveContact(ContactForm1.SaveEvent event) {
+    private void saveContact(ContactForm.SaveEvent event) {
         service.saveContact(event.getCompany());
     }
 
-    private void deleteContact(ContactForm1.DeleteEvent event) {
+    private void deleteContact(ContactForm.DeleteEvent event) {
         service.deleteContact(event.getCompany());
+    }
+
+    private void addContact() {
+        grid.asSingleSelect().clear();
+        companyDialog = new CompanyDialog(service);
+        //dialogForm.setVisible(true);
+        addToNavbar(companyDialog);
     }
 
     private void updateList() {

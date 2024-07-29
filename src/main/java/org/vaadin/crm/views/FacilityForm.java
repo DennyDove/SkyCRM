@@ -4,24 +4,19 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.dependency.Uses;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.shared.Registration;
-import org.vaadin.crm.entities.Company;
+import org.vaadin.crm.entities.Facility;
 import org.vaadin.crm.entities.Status;
 import org.vaadin.crm.services.CrmService;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,17 +26,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 //@Route(value = "form")
-public class ContactForm extends FormLayout {
+public class FacilityForm extends FormLayout {
     CrmService service;
 
-    TextField companyName = new TextField("Название компании");
+    TextField facilityName = new TextField("Название объекта");
+    TextField area = new TextField("Площадь, м2");
+    TextField address = new TextField("Адрес");
+    TextField price = new TextField("Стоимость");
+    TextField owner = new TextField("Арендатор, коммерческие условия");
+    TextField facilityReadiness = new TextField("Стадия готовности");
+    TextArea description = new TextArea("Описание объекта");
+    TextField contactLinks = new TextField("Контакты/ссылки");
 
     DateTimePicker dateTime = new DateTimePicker("Дата создания");
-
-    EmailField email = new EmailField("Email");
     ComboBox<Status> status = new ComboBox<>("Статус");
 
-    TextArea comments = new TextArea("Комментарии");
+
 
     Button save = new Button("Сохранить");
     Button delete = new Button("Удалить");
@@ -49,43 +49,44 @@ public class ContactForm extends FormLayout {
 
     static Long id;
 
-    BeanValidationBinder<Company> binder = new BeanValidationBinder<>(Company.class);
+    BeanValidationBinder<Facility> binder = new BeanValidationBinder<>(Facility.class);
     //BeanValidationBinder<Task> taskBinder = new BeanValidationBinder<>(Task.class);
 
-    public ContactForm(CrmService service, List<Status> statuses) {
+    public FacilityForm(CrmService service, List<Status> statuses) {
         this.service = service;
 
-        addClassName("contact-form");
+        addClassName("facility-form");
         binder.bindInstanceFields(this);
-
-        //taskBinder.bindInstanceFields(this);
 
         status.setItems(statuses);
         status.setItemLabelGenerator(Status::getName);
 
         dateTime.setValue(LocalDateTime.now().withNano(0));
 
-        comments.addClassName("comments-area");
-        //comments.setHeight(77, Unit.PIXELS);
-        //comments.setMinHeight("100px");
-        comments.setMaxHeight("120px");
+        description.addClassName("description-area");
+        //description.setHeight(77, Unit.PIXELS);
+        description.setMaxHeight("120px");
 
-
-        add(companyName,
-                email,
+        add(facilityName,
+                area,
+                address,
+                price,
+                owner,
+                facilityReadiness,
+                description,
+                contactLinks,
                 status,
                 dateTime,
-                comments,
                 createButtonsLayout());
 
         uploadBasic();
-        addSaveListener(e -> saveContact(e));
-        addDeleteListener(this::deleteContact);
+        addSaveListener(e -> saveFacility(e));
+        addDeleteListener(this::deleteFacility);
         addCloseListener(e -> closeEditor());
     }
 
-    public void setCompany(Company company) {
-        binder.setBean(company);
+    public void setFacility(Facility facility) {
+        binder.setBean(facility);
     }
 
     private void uploadBasic() {
@@ -100,7 +101,7 @@ public class ContactForm extends FormLayout {
 
             System.out.println(fileName);
 
-            File path = new File("/documents/"+id);
+            File path = new File("/facility/"+id);
             path.mkdirs();
 
             System.out.println(path);
@@ -125,7 +126,7 @@ public class ContactForm extends FormLayout {
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        // Закомментил кнопку ENTER, т.к. это входит в конфликт с заполнением поля "comments"
+        // Закомментил кнопку ENTER, т.к. это входит в конфликт с заполнением поля "description"
         //save.addClickShortcut(Key.ENTER);
         close.addClickShortcut(Key.ESCAPE);
 
@@ -158,36 +159,35 @@ public class ContactForm extends FormLayout {
         confirm.setCancelButton("Нет", e-> {
             confirm.close();
         });
-
     }
 
-    public static abstract class ContactFormEvent extends ComponentEvent<ContactForm> {
-        private Company company;
+    public static abstract class FacilityFormEvent extends ComponentEvent<FacilityForm> {
+        private Facility facility;
 
-        protected ContactFormEvent(ContactForm source, Company company) {
+        protected FacilityFormEvent(FacilityForm source, Facility facility) {
             super(source, false);
-            this.company = company;
+            this.facility = facility;
         }
-        public Company getCompany() {
-            return company;
-        }
-    }
-
-    public static class SaveEvent extends ContactFormEvent {
-        SaveEvent(ContactForm source, Company company) {
-            super(source, company);
+        public Facility getFacility() {
+            return facility;
         }
     }
 
-    public static class DeleteEvent extends ContactFormEvent {
-        DeleteEvent(ContactForm source, Company company) {
-            super(source, company);
+    public static class SaveEvent extends FacilityFormEvent {
+        SaveEvent(FacilityForm source, Facility facility) {
+            super(source, facility);
+        }
+    }
+
+    public static class DeleteEvent extends FacilityFormEvent {
+        DeleteEvent(FacilityForm source, Facility facility) {
+            super(source, facility);
         }
 
     }
 
-    public static class CloseEvent extends ContactFormEvent {
-        CloseEvent(ContactForm source) {
+    public static class CloseEvent extends FacilityFormEvent {
+        CloseEvent(FacilityForm source) {
             super(source, null);
         }
     }
@@ -205,13 +205,13 @@ public class ContactForm extends FormLayout {
 
 
 
-    private void saveContact(ContactForm.SaveEvent event) {
-        service.saveContact(event.getCompany());
+    private void saveFacility(FacilityForm.SaveEvent event) {
+        service.saveFacility(event.getFacility());
 
     }
 
-    private void deleteContact(ContactForm.DeleteEvent event) {
-        service.deleteContact(event.getCompany());
+    private void deleteFacility(FacilityForm.DeleteEvent event) {
+        service.deleteFacility(event.getFacility());
 
     }
 
@@ -228,7 +228,7 @@ public class ContactForm extends FormLayout {
     */
 
     private void closeEditor() {
-        this.setCompany(null);
+        this.setFacility(null);
         this.remove();
         UI ui = this.getUI().get();
         ui.refreshCurrentRoute(true);
